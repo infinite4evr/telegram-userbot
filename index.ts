@@ -3,8 +3,6 @@ dotenv.config();
 
 import { Airgram, Auth, Message, MessageText, prompt } from "airgram";
 
-console.log(process.env);
-
 const airgram = new Airgram({
   apiId: (process.env.API_ID as unknown) as number,
   apiHash: process.env.API_HASH,
