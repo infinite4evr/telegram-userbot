@@ -1,13 +1,10 @@
 import dotenv from "dotenv";
-import fs from "fs";
-
 dotenv.config();
+import fs from "fs";
+import { Airgram, Auth, Message, MessageText, prompt } from "airgram";
 import tags from "./tags.json";
 
 const tagsRegex = new RegExp(tags.tags.join("|"), "i");
-
-import { Airgram, Auth, Message, MessageText, prompt } from "airgram";
-import { fstat } from "node:fs";
 
 const airgram = new Airgram({
   apiId: (process.env.API_ID as unknown) as number,
@@ -29,6 +26,7 @@ const forwardMessage = (message: Message) => {
       chatId: myChatId,
       fromChatId: message.chatId,
       messageIds: [message.id],
+      sendCopy: true,
     })
     .then((s) => console.log(s))
     .catch((err) => console.log(err));
