@@ -44,7 +44,7 @@ const isTextMessage = (message: Message) => message.content._ === "messageText";
 airgram.on("updateNewMessage", async ({ update }) => {
   const { message } = update;
 
-  if (channels.includes(message.chatId) && isTextMessage(message)) {
+  if (isTextMessage(message)) {
     const textMessage = message.content as MessageText;
     const text = textMessage.text.text;
 
@@ -82,7 +82,10 @@ airgram.on("updateNewMessage", async ({ update }) => {
       fs.writeFileSync("dist/tags.json", JSON.stringify(tags));
     }
 
-    if (percentRegex.test(text) || tagsRegex.test(text)) {
+    if (
+      channels.includes(message.chatId) &&
+      (percentRegex.test(text) || tagsRegex.test(text))
+    ) {
       forwardMessage(message);
     }
   }
