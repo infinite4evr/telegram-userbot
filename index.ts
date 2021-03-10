@@ -79,7 +79,7 @@ airgram.on("updateNewMessage", async ({ update }) => {
         },
       });
 
-      fs.writeFileSync("tags.json", JSON.stringify(tags));
+      fs.writeFileSync("dist/tags.json", JSON.stringify(tags));
     }
 
     if (percentRegex.test(text) || tagsRegex.test(text)) {
