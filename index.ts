@@ -44,47 +44,43 @@ const isTextMessage = (message: Message) => message.content._ === "messageText";
 airgram.on("updateNewMessage", async ({ update }) => {
   const { message } = update;
 
-  const textMessage = message.content as MessageText;
-  const text = textMessage.text.text;
-  console.log(message);
-
-  if (
-    message.chatId === myPersonalId &&
-    "userId" in message.sender &&
-    message.sender.userId === myPersonalId
-  ) {
-    const tag = text.split(" ");
-    const index = tags.tags.indexOf(tag[1]);
-    if (text.includes("remove")) {
-      if (index > -1) {
-        console.log("here");
-        tags.tags.splice(index, 1);
-      }
-    }
-
-    if (text.includes("add")) {
-      if (index === -1) {
-        tags.tags.push(tag[1]);
-      }
-    }
-
-    airgram.api.sendMessage({
-      chatId: myPersonalId,
-      inputMessageContent: {
-        _: "inputMessageText",
-        text: {
-          _: "formattedText",
-          text: tags.tags.join("\n"),
-        },
-      },
-    });
-
-    fs.writeFileSync("tags.json", JSON.stringify(tags));
-  }
-
   if (channels.includes(message.chatId) && isTextMessage(message)) {
     const textMessage = message.content as MessageText;
     const text = textMessage.text.text;
+
+    if (
+      "userId" in message.sender &&
+      message.chatId === myPersonalId &&
+      message.sender.userId === myPersonalId
+    ) {
+      const tag = text.split(" ");
+      const index = tags.tags.indexOf(tag[1]);
+      if (text.includes("remove")) {
+        if (index > -1) {
+          console.log("here");
+          tags.tags.splice(index, 1);
+        }
+      }
+
+      if (text.includes("add")) {
+        if (index === -1) {
+          tags.tags.push(tag[1]);
+        }
+      }
+
+      airgram.api.sendMessage({
+        chatId: myPersonalId,
+        inputMessageContent: {
+          _: "inputMessageText",
+          text: {
+            _: "formattedText",
+            text: tags.tags.join("\n"),
+          },
+        },
+      });
+
+      fs.writeFileSync("tags.json", JSON.stringify(tags));
+    }
 
     if (percentRegex.test(text) || tagsRegex.test(text)) {
       forwardMessage(message);
