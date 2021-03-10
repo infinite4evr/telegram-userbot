@@ -1,10 +1,13 @@
 import dotenv from "dotenv";
+import fs from "fs";
+
 dotenv.config();
 import tags from "./tags.json";
 
 const tagsRegex = new RegExp(tags.tags.join("|"), "i");
 
 import { Airgram, Auth, Message, MessageText, prompt } from "airgram";
+import { fstat } from "node:fs";
 
 const airgram = new Airgram({
   apiId: (process.env.API_ID as unknown) as number,
@@ -15,6 +18,8 @@ const airgram = new Airgram({
 
 const percentRegex = /[3-9]\d%/;
 const myChatId = -1001481850800;
+
+const myPersonalId = 330959283;
 
 const channels = [-1001450712440, -1001156896568, -1001259793382, -504416139];
 
@@ -40,7 +45,44 @@ const isTextMessage = (message: Message) => message.content._ === "messageText";
 
 airgram.on("updateNewMessage", async ({ update }) => {
   const { message } = update;
+
+  const textMessage = message.content as MessageText;
+  const text = textMessage.text.text;
   console.log(message);
+
+  if (
+    message.chatId === myPersonalId &&
+    "userId" in message.sender &&
+    message.sender.userId === myPersonalId
+  ) {
+    const tag = text.split(" ");
+    const index = tags.tags.indexOf(tag[1]);
+    if (text.includes("remove")) {
+      if (index > -1) {
+        console.log("here");
+        tags.tags.splice(index, 1);
+      }
+    }
+
+    if (text.includes("add")) {
+      if (index === -1) {
+        tags.tags.push(tag[1]);
+      }
+    }
+
+    airgram.api.sendMessage({
+      chatId: myPersonalId,
+      inputMessageContent: {
+        _: "inputMessageText",
+        text: {
+          _: "formattedText",
+          text: tags.tags.join("\n"),
+        },
+      },
+    });
+
+    fs.writeFileSync("tags.json", JSON.stringify(tags));
+  }
 
   if (channels.includes(message.chatId) && isTextMessage(message)) {
     const textMessage = message.content as MessageText;
