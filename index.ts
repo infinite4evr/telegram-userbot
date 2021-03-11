@@ -60,7 +60,6 @@ airgram.on("updateNewMessage", async ({ update }) => {
       const index = tags.tags.indexOf(tag[1]);
       if (text.includes("remove")) {
         if (index > -1) {
-          console.log("here");
           tags.tags.splice(index, 1);
         }
       }
