@@ -21,6 +21,10 @@ const myPersonalId = 330959283;
 const channels = [-1001450712440, -1001156896568, -1001259793382, -504416139];
 
 const forwardMessage = (message: Message) => {
+  airgram.api.getChat({
+    chatId: myChatId,
+  });
+
   airgram.api
     .forwardMessages({
       chatId: myChatId,
