@@ -30,7 +30,6 @@ const forwardMessage = (message: Message) => {
       chatId: myChatId,
       fromChatId: message.chatId,
       messageIds: [message.id],
-      sendCopy: true,
     })
     .then((s) => console.log(s))
     .catch((err) => console.log(err));
