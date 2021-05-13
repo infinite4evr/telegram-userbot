@@ -5,6 +5,7 @@ import { Airgram, Auth, Message, MessageText, prompt } from "airgram";
 import tags from "./tags.json";
 
 const tagsRegex = new RegExp(tags.tags.join("|"), "i");
+const bannedRegex = new RegExp(tags.banned.join("|"), "i");
 
 const airgram = new Airgram({
   apiId: (process.env.API_ID as unknown) as number,
@@ -56,18 +57,34 @@ airgram.on("updateNewMessage", async ({ update }) => {
       message.chatId === myPersonalId &&
       message.sender.userId === myPersonalId
     ) {
-      const tag = text.split(" ");
-      const index = tags.tags.indexOf(tag[1]);
+      const allWordsInMessage = text.split(" ");
+      const itemEntered = allWordsInMessage[1];
       if (text.includes("remove")) {
+        const index = tags.tags.indexOf(itemEntered);
+
         if (index > -1) {
-          console.log("here");
           tags.tags.splice(index, 1);
         }
       }
 
+      if (text.includes("unban")) {
+        const bannedWordIndex = tags.banned.indexOf(itemEntered);
+        if (bannedWordIndex > -1) {
+          tags.tags.splice(bannedWordIndex, 1);
+        }
+      }
+
+      if (text.includes("ban")) {
+        const bannedWordIndex = tags.banned.indexOf(itemEntered);
+        if (bannedWordIndex > -1) {
+          tags.banned.push(itemEntered);
+        }
+      }
+
       if (text.includes("add")) {
+        const index = tags.tags.indexOf(itemEntered);
         if (index === -1) {
-          tags.tags.push(tag[1]);
+          tags.tags.push(itemEntered);
         }
       }
 
@@ -77,7 +94,10 @@ airgram.on("updateNewMessage", async ({ update }) => {
           _: "inputMessageText",
           text: {
             _: "formattedText",
-            text: tags.tags.join("\n"),
+            text:
+              tags.tags.join(", ") +
+              "\n Banned Items \n" +
+              tags.banned.join(", "),
           },
         },
       });
@@ -87,7 +107,8 @@ airgram.on("updateNewMessage", async ({ update }) => {
 
     if (
       channels.includes(message.chatId) &&
-      (percentRegex.test(text) || tagsRegex.test(text))
+      (percentRegex.test(text) || tagsRegex.test(text)) &&
+      !bannedRegex.test(text)
     ) {
       forwardMessage(message);
     }
