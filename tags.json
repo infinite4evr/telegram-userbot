@@ -1,1 +1,8 @@
-{"tags":["test"]}
+{
+  "tags": [
+    "test"
+  ],
+  "banned": [
+    "remove"
+  ]
+}
