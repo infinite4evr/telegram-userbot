@@ -8,7 +8,7 @@ const tagsRegex = new RegExp(tags.tags.join("|"), "i");
 const bannedRegex = new RegExp(tags.banned.join("|"), "i");
 
 const airgram = new Airgram({
-  apiId: (process.env.API_ID as unknown) as number,
+  apiId: process.env.API_ID as unknown as number,
   apiHash: process.env.API_HASH,
   command: process.env.TDLIB_COMMAND,
   logVerbosityLevel: 2,
@@ -45,6 +45,8 @@ airgram.use(
 
 const isTextMessage = (message: Message) => message.content._ === "messageText";
 
+let commandRegex = new RegExp("remove|block|unban|add");
+
 airgram.on("updateNewMessage", async ({ update }) => {
   const { message } = update;
 
@@ -57,8 +59,9 @@ airgram.on("updateNewMessage", async ({ update }) => {
       message.chatId === myPersonalId &&
       message.sender.userId === myPersonalId
     ) {
-      const allWordsInMessage = text.split(" ");
-      const itemEntered = allWordsInMessage[1];
+      const itemEntered = text.replaceAll(commandRegex, "");
+
+      // need refactor
       if (text.includes("remove")) {
         const index = tags.tags.indexOf(itemEntered);
 
