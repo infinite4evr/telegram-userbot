@@ -45,7 +45,7 @@ airgram.use(
 
 const isTextMessage = (message: Message) => message.content._ === "messageText";
 
-let commandRegex = new RegExp("remove|block|unban|add");
+let commandRegex = new RegExp(/remove|block|unban|add/);
 
 airgram.on("updateNewMessage", async ({ update }) => {
   const { message } = update;
@@ -59,7 +59,7 @@ airgram.on("updateNewMessage", async ({ update }) => {
       message.chatId === myPersonalId &&
       message.sender.userId === myPersonalId
     ) {
-      const itemEntered = text.replaceAll(commandRegex, "");
+      const itemEntered = text.replace(commandRegex, "");
 
       // need refactor
       if (text.includes("remove")) {
