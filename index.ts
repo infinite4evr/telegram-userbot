@@ -110,8 +110,8 @@ airgram.on("updateNewMessage", async ({ update }) => {
 
     if (
       channels.includes(message.chatId) &&
-      (percentRegex.test(text) || tagsRegex.test(text)) &&
-      !bannedRegex.test(text)
+      ((percentRegex.test(text) && !bannedRegex.test(text)) ||
+        tagsRegex.test(text))
     ) {
       forwardMessage(message);
     }
