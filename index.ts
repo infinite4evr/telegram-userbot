@@ -70,13 +70,13 @@ airgram.on("updateNewMessage", async ({ update }) => {
       if (text.includes("unban")) {
         const bannedWordIndex = tags.banned.indexOf(itemEntered);
         if (bannedWordIndex > -1) {
-          tags.tags.splice(bannedWordIndex, 1);
+          tags.banned.splice(bannedWordIndex, 1);
         }
       }
 
-      if (text.includes("ban")) {
+      if (text.includes("block")) {
         const bannedWordIndex = tags.banned.indexOf(itemEntered);
-        if (bannedWordIndex > -1) {
+        if (bannedWordIndex === -1) {
           tags.banned.push(itemEntered);
         }
       }
@@ -96,7 +96,7 @@ airgram.on("updateNewMessage", async ({ update }) => {
             _: "formattedText",
             text:
               tags.tags.join(", ") +
-              "\n Banned Items \n" +
+              "\n\nBanned Items \n" +
               tags.banned.join(", "),
           },
         },
