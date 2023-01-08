@@ -1,11 +1,11 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 dotenv.config();
-import fs from "fs";
-import { Airgram, Auth, Message, MessageText, prompt } from "airgram";
-import tags from "./tags.json";
+import fs from 'fs';
+import { Airgram, Auth, Message, MessageText, prompt } from 'airgram';
+import tags from './tags.json';
 
-const tagsRegex = new RegExp(tags.tags.join("|"), "i");
-const bannedRegex = new RegExp(tags.banned.join("|"), "i");
+const tagsRegex = new RegExp(tags.tags.join('|'), 'i');
+const bannedRegex = new RegExp(tags.banned.join('|'), 'i');
 
 const airgram = new Airgram({
   apiId: process.env.API_ID as unknown as number,
@@ -32,8 +32,8 @@ const forwardMessage = (message: Message) => {
       fromChatId: message.chatId,
       messageIds: [message.id],
     })
-    .then((s) => console.log(s))
-    .catch((err) => console.log(err));
+    .then(s => console.log(s))
+    .catch(err => console.log(err));
 };
 
 airgram.use(
@@ -43,77 +43,79 @@ airgram.use(
   })
 );
 
-const isTextMessage = (message: Message) => message.content._ === "messageText";
+const isTextMessage = (message: Message) => message.content._ === 'messageText';
 
 let commandRegex = new RegExp(/remove|block|unban|add/);
 
-airgram.on("updateNewMessage", async ({ update }) => {
+airgram.on('updateNewMessage', async ({ update }) => {
   const { message } = update;
 
   if (isTextMessage(message)) {
     const textMessage = message.content as MessageText;
     const text = textMessage.text.text;
 
-    if (
-      "userId" in message.sender &&
-      message.chatId === myPersonalId &&
-      message.sender.userId === myPersonalId
-    ) {
-      const itemEntered = text.replace(commandRegex, "");
+    console.log(message);
 
-      // need refactor
-      if (text.includes("remove")) {
-        const index = tags.tags.indexOf(itemEntered);
+    /* if (
+			"userId" in message.sender &&
+			message.chatId === myPersonalId &&
+			message.sender.userId === myPersonalId
+		) {
+			const itemEntered = text.replace(commandRegex, "")
 
-        if (index > -1) {
-          tags.tags.splice(index, 1);
-        }
-      }
+			// need refactor
+			if (text.includes("remove")) {
+				const index = tags.tags.indexOf(itemEntered)
 
-      if (text.includes("unban")) {
-        const bannedWordIndex = tags.banned.indexOf(itemEntered);
-        if (bannedWordIndex > -1) {
-          tags.banned.splice(bannedWordIndex, 1);
-        }
-      }
+				if (index > -1) {
+					tags.tags.splice(index, 1)
+				}
+			}
 
-      if (text.includes("block")) {
-        const bannedWordIndex = tags.banned.indexOf(itemEntered);
-        if (bannedWordIndex === -1) {
-          tags.banned.push(itemEntered);
-        }
-      }
+			if (text.includes("unban")) {
+				const bannedWordIndex = tags.banned.indexOf(itemEntered)
+				if (bannedWordIndex > -1) {
+					tags.banned.splice(bannedWordIndex, 1)
+				}
+			}
 
-      if (text.includes("add")) {
-        const index = tags.tags.indexOf(itemEntered);
-        if (index === -1) {
-          tags.tags.push(itemEntered);
-        }
-      }
+			if (text.includes("block")) {
+				const bannedWordIndex = tags.banned.indexOf(itemEntered)
+				if (bannedWordIndex === -1) {
+					tags.banned.push(itemEntered)
+				}
+			}
 
-      airgram.api.sendMessage({
-        chatId: myPersonalId,
-        inputMessageContent: {
-          _: "inputMessageText",
-          text: {
-            _: "formattedText",
-            text:
-              tags.tags.join(", ") +
-              "\n\nBanned Items \n" +
-              tags.banned.join(", "),
-          },
-        },
-      });
+			if (text.includes("add")) {
+				const index = tags.tags.indexOf(itemEntered)
+				if (index === -1) {
+					tags.tags.push(itemEntered)
+				}
+			}
 
-      fs.writeFileSync("dist/tags.json", JSON.stringify(tags));
-    }
+			airgram.api.sendMessage({
+				chatId: myPersonalId,
+				inputMessageContent: {
+					_: "inputMessageText",
+					text: {
+						_: "formattedText",
+						text:
+							tags.tags.join(", ") +
+							"\n\nBanned Items \n" +
+							tags.banned.join(", "),
+					},
+				},
+			})
 
-    if (
-      channels.includes(message.chatId) &&
-      ((percentRegex.test(text) && !bannedRegex.test(text)) ||
-        tagsRegex.test(text))
-    ) {
-      forwardMessage(message);
-    }
+			fs.writeFileSync("dist/tags.json", JSON.stringify(tags))
+		}
+
+		if (
+			channels.includes(message.chatId) &&
+			((percentRegex.test(text) && !bannedRegex.test(text)) ||
+				tagsRegex.test(text))
+		) {
+			forwardMessage(message)
+		} */
   }
 });
